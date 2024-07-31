@@ -32,8 +32,17 @@ class AuthenticateView(APIView):
 
     def post(self, request, *args, **kwargs):
         token = request.data.get('token')
+        if not token:
+            return Response({'valid': False}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            AccessToken(token)
-            return Response({'valid': True})
+            access_token_obj = AccessToken(token)
+            user_id = access_token_obj['user_id']
+            user = User.objects.get(id=user_id)
+            return Response({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'is_authenticated': True
+            }, status=status.HTTP_200_OK)
         except (TokenError, InvalidToken):
             return Response({'valid': False}, status=status.HTTP_400_BAD_REQUEST)

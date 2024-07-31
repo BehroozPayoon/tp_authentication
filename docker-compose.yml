@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  authentication:
+    image: tp_authentication:latest
+    container_name: authentication
+    command: "python manage.py runserver 0.0.0.0:8000"
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./.:/app
+    ports:
+      - 8000:8000
+
+networks:
+  backend:
+    external: true
